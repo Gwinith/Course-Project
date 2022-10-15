@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Inventory Management</title>
+
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Our Custom CSS -->
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+
+
+
+  <div class="wrapper">
+    <!-- Sidebar Holder -->
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <h3>Inventory Management System</h3>
+      </div>
+
+      <ul class="list-unstyled components">
+        <li class="active">
+          <a href="#">Dashboard</a>
+        </li>
+        <li>
+          <a href="user-profile.html">Profile</a>
+        </li>
+        <li>
+          <a href="inventory.html">Inventory</a>
+        </li>
+        
+        <li>
+          <a href="addproduct.html">Add Product</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Page Content Holder -->
+    <div id="content" style="width: 100%;">
+
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+
+          <div class="navbar-header">
+            <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+              <i class="glyphicon glyphicon-align-left"></i>
+              <span></span>
+            </button>
+          </div>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li  id="logout"><a href="../login.html">Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h3 class="font-weight-bold" id="username">Welcome </h3>
+                </div>
+                <div class="col-12 col-xl-4">
+                  <div class="justify-content-end d-flex">
+                    <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
+                      <button class="btn btn-sm btn-light bg-white " type="button" id="dropdownMenuDate2"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <i class="mdi mdi-calendar" id="date"></i> Today
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 grid-margin transparent">
+              <div class="row">
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <h4 class="mb-4">Total Available Products</h4>
+                      <p class="fs-30 mb-2" id="itemsCount"></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-dark-blue">
+                    <div class="card-body">
+                      <h4 class="mb-4">Total Issued Products</h4>
+                      <p class="fs-30 mb-2" id="ApproveCount"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+                  <div class="card card-light-blue">
+                    <div class="card-body">
+                      <h4 class="mb-4">Total Requests For Products</h4>
+                      <p class="fs-30 mb-2" id="RequestCount"></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 stretch-card transparent">
+                  <div class="card card-light-danger">
+                    <div class="card-body">
+                      <h4 class="mb-4">Total Users Registered</h4>
+                      <p class="fs-30 mb-2" id="Users"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-9 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-title mb-0">Issued Products Approval</p>
+                  <div class="table-responsive">
+                    <table class="table table-striped table-borderless">
+                      <thead>
+                        <tr>
+                          <th>Serial No.</th>
+                          <th>Product Id</th>
+                          <th>User Email</th>
+                          <th>Product Name</th>
+                          <th>Quantity</th>
+                          <th>Approval</th>
+                        </tr>
+                      </thead>
+                      <tbody id="product_table">
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+          <script>
+
+            $(document).ready(function () {
+
+              $.ajax({
+                url: 'http://127.0.0.1:5000/get-admin-dashboard-ajax',
+                type: 'GET',
+                dataType: 'json',
+                success: function (result) {
+                  if (result != "") {
+                    document.getElementById("username").innerHTML += result["username"];
+                    document.getElementById("date").innerHTML += new Date();
+                    document.getElementById("Users").innerHTML += result['total_user'];
+                    document.getElementById("itemsCount").innerHTML += result['total_products'];
+                    document.getElementById("ApproveCount").innerHTML += result['total_issued_products'];
+                    document.getElementById("RequestCount").innerHTML += result['requested_products'];
+                    var product_table = document.getElementById("product_table");
+                    var myHTML = '';
+                    data_list = result['data_list'];
+                    for (var i = 0; i < data_list.length; i++) {
+
+                      myHTML += '<tr class="table-success"><td id="id">' + data_list[i][0] + '<td id="myname">' + data_list[i][1] + '</td><td id="email">' + data_list[i][2] + '</td><td id="item">' + data_list[i][3] + '</td><td id="category">' + data_list[i][4] + '</td><td>'
+                      if (data_list[i][5]  != "Requested")
+                        myHTML += '<button type="submit" id="status-change" class="btn btn-success btn-sm" name="status-change" disabled>' + data_list[i][5]  + '</button></td></tr>';
+                      else{
+                        myHTML+= '<button type="submit"';
+                        myHTML+= 'id="'+ data_list[i][0]+'"';
+                        myHTML+= 'class="btn btn-success btn-sm" name="status-change">' + data_list[i][5] + '(Click to Approve)</button></td></tr>';}
+                    }
+
+                    product_table.innerHTML = myHTML
+                  } else {
+                    alert(result);
+                  }
+                }
+
+              });
+            });
+          </script>
+
+          <script>
+            document.body.addEventListener('click', function (e) {
+              var name = e.target.getAttribute('name');
+              if(name == "status-change") {
+                console.log("clicked");
+                dashboard_id = e.target.id;
+                product_ID = e.target.myname;
+                console.log(product_ID);
+                $.ajax({
+                  url: 'http://127.0.0.1:5000/approve-products-ajax',
+                  type: 'POST',
+                  headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                  },
+                  contentType: 'application/JSON; charset=utf-8',
+                  data: JSON.stringify({
+                    dashboard_id: dashboard_id,
+
+
+                  }),
+                  success: function (result) {
+                    if (result == 'success') {
+                      console.log("success");
+                      alert("Product Request Approved Successfully");
+                      location.reload();
+                    } else {
+                      alert(result);
+                    }
+                  }
+
+                });
+              }
+            })
+          </script>
+        <script>
+          $("#logout").on("click", function () {
+            
+            $.ajax({
+              url: 'http://127.0.0.1:5000/logout-ajax',
+              type: 'POST',
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+              },
+              contentType: 'application/JSON; charset=utf-8',
+              success: function (result) {
+                if (result == 'success') {
+                  alert("Logged out Successfully")
+                  window.location.href = "../login.html";
+                } else {
+                  alert(result);
+                }
+              }
+
+            });
+
+          });
+        </script>
+
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+            integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+            crossorigin="anonymous"></script>
+
+          <script type="text/javascript">
+            $(document).ready(function () {
+              $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+              });
+            });
+          </script>
+</body>
+
+</html>
